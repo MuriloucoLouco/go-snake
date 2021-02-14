@@ -157,6 +157,7 @@ func (s *snake) render(state gameState) {
 
 	for i, position := range s.positions {
 		var textureCoord int32
+		adjust := int32(math.Round(blockSize / 50))
 
 		if position[3] == 0 {
 			textureCoord = 0
@@ -168,6 +169,17 @@ func (s *snake) render(state gameState) {
 			textureCoord = 16
 		}
 
+		var adjustX, adjustY int32
+		switch position[2] {
+		case 90:
+			adjustX = 1
+		case 180:
+			adjustX = 1
+			adjustY = 1
+		case 270:
+			adjustY = 1
+		}
+
 		state.renderer.CopyEx(s.texture,
 			&sdl.Rect{
 				X: textureCoord,
@@ -176,10 +188,10 @@ func (s *snake) render(state gameState) {
 				H: 8,
 			},
 			&sdl.Rect{
-				X: int32(float64(position[0])*blockSize + padX),
-				Y: int32(float64(position[1])*blockSize+padY) - 1,
-				W: int32(blockSize),
-				H: int32(blockSize) + 1,
+				X: int32(float64(position[0])*blockSize+padX) + adjustX - adjust,
+				Y: int32(float64(position[1])*blockSize+padY) + adjustY - adjust,
+				W: int32(blockSize) + adjust,
+				H: int32(blockSize) + adjust,
 			},
 			float64(position[2]),
 			&sdl.Point{

@@ -12,6 +12,7 @@ const (
 	gridHeight = 20
 	centerX    = int(gridWidth / 2)
 	centerY    = int(gridHeight / 2)
+	speed      = 250
 )
 
 type gameState struct {
@@ -37,7 +38,7 @@ func render(state gameState) {
 		state.renderer.Present()
 
 		state.window.SetTitle("Snake - score: " + fmt.Sprintf("%d", state.snake.score))
-		time.Sleep(125 * time.Millisecond)
+		time.Sleep(speed * time.Millisecond)
 	}
 }
 
