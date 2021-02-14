@@ -21,6 +21,26 @@ type gameState struct {
 	apple    *apple
 }
 
+func render(state gameState) {
+	for {
+		state.snake.update(state)
+
+		padX, padY, _, screenWidth, screenHeight := getRightSize(state.window)
+		state.renderer.SetDrawColor(255, 255, 255, 255)
+		state.renderer.Clear()
+		state.renderer.SetDrawColor(0, 0, 0, 255)
+		state.renderer.FillRect(&sdl.Rect{X: int32(padX), Y: int32(padY), W: int32(screenWidth), H: int32(screenHeight)})
+
+		state.apple.render(state)
+		state.snake.render(state)
+
+		state.renderer.Present()
+
+		state.window.SetTitle("Snake - score: " + fmt.Sprintf("%d", state.snake.score))
+		time.Sleep(125 * time.Millisecond)
+	}
+}
+
 func main() {
 	if err := sdl.Init(sdl.INIT_EVERYTHING); err != nil {
 		panic(err)
@@ -56,8 +76,9 @@ func main() {
 	a := createApple(state)
 	state.apple = &a
 
+	go render(state)
+
 	for {
-		time.Sleep(125 * time.Millisecond)
 		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
 			switch event.(type) {
 			case *sdl.QuitEvent:
@@ -66,20 +87,6 @@ func main() {
 				s.move()
 			}
 		}
-
-		s.update(state)
-
-		padX, padY, _, screenWidth, screenHeight := getRightSize(window)
-		renderer.SetDrawColor(255, 255, 255, 255)
-		renderer.Clear()
-		renderer.SetDrawColor(0, 0, 0, 255)
-		renderer.FillRect(&sdl.Rect{X: int32(padX), Y: int32(padY), W: int32(screenWidth), H: int32(screenHeight)})
-
-		a.render(state)
-		s.render(state)
-
-		renderer.Present()
-
-		window.SetTitle("Snake - score: " + fmt.Sprintf("%d", s.score))
+		time.Sleep(30 * time.Millisecond)
 	}
 }
