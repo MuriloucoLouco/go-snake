@@ -41,10 +41,10 @@ func (a *apple) render(state gameState) {
 	state.renderer.Copy(a.texture,
 		&sdl.Rect{X: 0, Y: 0, W: 8, H: 8},
 		&sdl.Rect{
-			X: int32(a.posX)*blockSize + padX,
-			Y: int32(a.posY)*blockSize + padY,
-			W: blockSize,
-			H: blockSize,
+			X: int32(float64(a.posX)*blockSize + padX),
+			Y: int32(float64(a.posY)*blockSize + padY),
+			W: int32(blockSize),
+			H: int32(blockSize),
 		},
 	)
 }

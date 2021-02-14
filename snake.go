@@ -71,6 +71,8 @@ func (s *snake) die(state gameState) {
 }
 
 func (s *snake) update(state gameState) {
+	s.eat(state)
+
 	if !s.growing {
 		s.positions = s.positions[1:]
 	} else {
@@ -174,10 +176,10 @@ func (s *snake) render(state gameState) {
 				H: 8,
 			},
 			&sdl.Rect{
-				X: int32(position[0])*blockSize + padX,
-				Y: int32(position[1])*blockSize + padY,
-				W: blockSize,
-				H: blockSize,
+				X: int32(float64(position[0])*blockSize + padX),
+				Y: int32(float64(position[1])*blockSize+padY) - 1,
+				W: int32(blockSize),
+				H: int32(blockSize) + 1,
 			},
 			float64(position[2]),
 			&sdl.Point{

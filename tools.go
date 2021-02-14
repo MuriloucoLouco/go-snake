@@ -21,21 +21,21 @@ func loadTextureFromBMP(spriteName string, renderer *sdl.Renderer) (texture *sdl
 	return texture
 }
 
-func getRightSize(w *sdl.Window) (padX, padY, blockSize, screenX, screenY int32) {
+func getRightSize(w *sdl.Window) (padX, padY, blockSize, screenX, screenY float64) {
 	screenWidth, screenHeight := w.GetSize()
 	proportion := float64(gridWidth) / float64(gridHeight)
 	screenProportion := float64(screenWidth) / float64(screenHeight)
 
 	if screenProportion > proportion {
-		screenX = int32(float64(screenHeight) * proportion)
-		screenY = screenHeight
+		screenX = float64(screenHeight) * proportion
+		screenY = float64(screenHeight)
 		blockSize = screenY / gridHeight
-		padX = (screenWidth - screenX) / 2
+		padX = (float64(screenWidth) - screenX) / 2
 	} else {
-		screenX = screenWidth
-		screenY = int32(float64(screenWidth) / proportion)
+		screenX = float64(screenWidth)
+		screenY = float64(screenWidth) / proportion
 		blockSize = screenX / gridWidth
-		padY = (screenHeight - screenY) / 2
+		padY = (float64(screenHeight) - screenY) / 2
 	}
 
 	return padX, padY, blockSize, screenX, screenY
