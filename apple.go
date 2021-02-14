@@ -27,22 +27,24 @@ func randomPlace(snakePositions [][4]int) (x, y int) {
 	return x, y
 }
 
-func createApple(renderer *sdl.Renderer, s snake) (a apple) {
-	a.posX, a.posY = randomPlace(s.positions)
+func createApple(state gameState) (a apple) {
+	a.posX, a.posY = randomPlace(state.snake.positions)
 
-	a.texture = loadTextureFromBMP("sprites/apple.bmp", renderer)
+	a.texture = loadTextureFromBMP("sprites/apple.bmp", state.renderer)
 
 	return a
 }
 
-func (a *apple) render(renderer *sdl.Renderer) {
-	renderer.Copy(a.texture,
+func (a *apple) render(state gameState) {
+	padX, padY, blockSize, _, _ := getRightSize(state.window)
+
+	state.renderer.Copy(a.texture,
 		&sdl.Rect{X: 0, Y: 0, W: 8, H: 8},
 		&sdl.Rect{
-			X: int32(a.posX * blockWidth),
-			Y: int32(a.posY * blockHeight),
-			W: blockWidth,
-			H: blockHeight,
+			X: int32(a.posX)*blockSize + padX,
+			Y: int32(a.posY)*blockSize + padY,
+			W: blockSize,
+			H: blockSize,
 		},
 	)
 }

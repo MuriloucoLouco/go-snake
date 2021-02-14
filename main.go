@@ -8,38 +8,17 @@ import (
 )
 
 const (
-	screenWidth  = 400
-	screenHeight = 400
-	gridWidth    = 20
-	gridHeight   = 20
-	blockWidth   = screenWidth / gridWidth
-	blockHeight  = screenHeight / gridHeight
-	centerX      = int(gridWidth / 2)
-	centerY      = int(gridHeight / 2)
+	gridWidth  = 20
+	gridHeight = 20
+	centerX    = int(gridWidth / 2)
+	centerY    = int(gridHeight / 2)
 )
 
-func contains(slice []string, value string) bool {
-	for _, element := range slice {
-		if element == value {
-			return true
-		}
-	}
-	return false
-}
-
-func loadTextureFromBMP(spriteName string, renderer *sdl.Renderer) (texture *sdl.Texture) {
-
-	img, err := sdl.LoadBMP(spriteName)
-	if err != nil {
-		panic(fmt.Errorf("loading sprite: %v", err))
-	}
-	defer img.Free()
-
-	texture, err = renderer.CreateTextureFromSurface(img)
-	if err != nil {
-		panic(fmt.Errorf("creating texture: %v", err))
-	}
-	return texture
+type gameState struct {
+	window   *sdl.Window
+	renderer *sdl.Renderer
+	snake    *snake
+	apple    *apple
 }
 
 func main() {
@@ -47,11 +26,14 @@ func main() {
 		panic(err)
 	}
 
+	screenWidth := int32(400)
+	screenHeight := int32(400)
+
 	window, err := sdl.CreateWindow(
 		"snake",
 		sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED,
 		screenWidth, screenHeight,
-		sdl.WINDOW_OPENGL,
+		sdl.WINDOW_RESIZABLE,
 	)
 	if err != nil {
 		panic(err)
@@ -64,8 +46,15 @@ func main() {
 	}
 	defer renderer.Destroy()
 
-	s := createSnake(renderer)
-	a := createApple(renderer, s)
+	state := gameState{
+		window:   window,
+		renderer: renderer,
+	}
+
+	s := createSnake(state)
+	state.snake = &s
+	a := createApple(state)
+	state.apple = &a
 
 	lastTime := time.Now().UnixNano() / int64(time.Millisecond)
 	for {
@@ -76,20 +65,24 @@ func main() {
 			}
 		}
 
-		renderer.SetDrawColor(0, 0, 0, 255)
+		padX, padY, _, screenX, screenY := getRightSize(window)
+		renderer.SetDrawColor(255, 255, 255, 255)
 		renderer.Clear()
+		renderer.SetDrawColor(0, 0, 0, 255)
+		renderer.FillRect(&sdl.Rect{X: padX, Y: padY, W: screenX, H: screenY})
 
-		s.eat(&a)
+		s.eat(state)
+		window.SetTitle("Snake - score: " + fmt.Sprintf("%d", s.score))
+
 		s.move()
 		tempNow := time.Now().UnixNano() / int64(time.Millisecond)
 		if tempNow > lastTime+125 {
 			lastTime = tempNow
-			s.update()
-
+			s.update(state)
 		}
 
-		a.render(renderer)
-		s.render(renderer)
+		a.render(state)
+		s.render(state)
 
 		renderer.Present()
 	}

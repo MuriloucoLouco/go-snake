@@ -12,17 +12,20 @@ type snake struct {
 	direction     string
 	nextDirection string
 	growing       bool
+	score         int
 }
 
-func createSnake(renderer *sdl.Renderer) (s snake) {
-	s.texture = loadTextureFromBMP("sprites/snake.bmp", renderer)
+func createSnake(state gameState) (s snake) {
+	s.texture = loadTextureFromBMP("sprites/snake.bmp", state.renderer)
 	s.positions = [][4]int{
 		{centerX - 3, centerY, 90, 0},
 		{centerX - 2, centerY, 90, 0},
 		{centerX - 1, centerY, 90, 0},
 	}
 	s.direction = "right"
+	s.nextDirection = "right"
 	s.growing = false
+	s.score = 0
 
 	return s
 }
@@ -53,26 +56,21 @@ func (s *snake) move() {
 	s.nextDirection = newDirection
 }
 
-func (s *snake) eat(a *apple) {
+func (s *snake) eat(state gameState) {
 	snakeHead := s.positions[len(s.positions)-1]
-	if snakeHead[0] == a.posX && snakeHead[1] == a.posY {
+	if snakeHead[0] == state.apple.posX && snakeHead[1] == state.apple.posY {
 		s.growing = true
-		a.posX, a.posY = randomPlace(s.positions)
+		state.apple.posX, state.apple.posY = randomPlace(s.positions)
+		s.score++
 	}
 }
 
-func (s *snake) die() {
-	s.positions = [][4]int{
-		{centerX - 3, centerY, 90, 0},
-		{centerX - 2, centerY, 90, 0},
-		{centerX - 1, centerY, 90, 0},
-	}
-	s.direction = "right"
-	s.nextDirection = "right"
-	s.growing = false
+func (s *snake) die(state gameState) {
+	*state.snake = createSnake(state)
+	*state.apple = createApple(state)
 }
 
-func (s *snake) update() {
+func (s *snake) update(state gameState) {
 	if !s.growing {
 		s.positions = s.positions[1:]
 	} else {
@@ -97,13 +95,13 @@ func (s *snake) update() {
 	}
 
 	if newPosition[0] < 0 || newPosition[0] >= gridWidth || newPosition[1] < 0 || newPosition[1] >= gridHeight {
-		s.die()
+		s.die(state)
 		return
 	}
 
 	for _, position := range s.positions {
 		if position[0] == newPosition[0] && position[1] == newPosition[1] {
-			s.die()
+			s.die(state)
 			return
 		}
 	}
@@ -152,7 +150,9 @@ func (s *snake) update() {
 	}
 }
 
-func (s *snake) render(renderer *sdl.Renderer) {
+func (s *snake) render(state gameState) {
+	padX, padY, blockSize, _, _ := getRightSize(state.window)
+
 	for i, position := range s.positions {
 		var textureCoord int32
 
@@ -166,7 +166,7 @@ func (s *snake) render(renderer *sdl.Renderer) {
 			textureCoord = 16
 		}
 
-		renderer.CopyEx(s.texture,
+		state.renderer.CopyEx(s.texture,
 			&sdl.Rect{
 				X: textureCoord,
 				Y: 0,
@@ -174,15 +174,15 @@ func (s *snake) render(renderer *sdl.Renderer) {
 				H: 8,
 			},
 			&sdl.Rect{
-				X: int32(position[0] * blockWidth),
-				Y: int32(position[1] * blockHeight),
-				W: blockWidth,
-				H: blockHeight,
+				X: int32(position[0])*blockSize + padX,
+				Y: int32(position[1])*blockSize + padY,
+				W: blockSize,
+				H: blockSize,
 			},
 			float64(position[2]),
 			&sdl.Point{
-				X: int32(blockWidth / 2),
-				Y: int32(blockHeight / 2),
+				X: int32(blockSize / 2),
+				Y: int32(blockSize / 2),
 			},
 			sdl.FLIP_NONE,
 		)
