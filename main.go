@@ -79,14 +79,13 @@ func main() {
 	go render(state)
 
 	for {
+		sdl.WaitEvent()
 		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
 			switch event.(type) {
 			case *sdl.QuitEvent:
 				return
-			case *sdl.KeyboardEvent:
-				s.move()
 			}
 		}
-		time.Sleep(30 * time.Millisecond)
+		s.move()
 	}
 }
