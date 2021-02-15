@@ -12,7 +12,7 @@ const (
 	gridHeight = 20
 	centerX    = int(gridWidth / 2)
 	centerY    = int(gridHeight / 2)
-	speed      = 250
+	speed      = 125
 )
 
 type gameState struct {
