@@ -14,6 +14,12 @@ func loadTextureFromBMP(spriteName string, renderer *sdl.Renderer) (texture *sdl
 	}
 	defer img.Free()
 
+	key := sdl.MapRGB(img.Format, 0, 0, 0)
+
+	if err := img.SetColorKey(true, key); err != nil {
+
+	}
+
 	texture, err = renderer.CreateTextureFromSurface(img)
 	if err != nil {
 		panic(fmt.Errorf("creating texture: %v", err))
