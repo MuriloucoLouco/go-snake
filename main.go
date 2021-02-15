@@ -15,11 +15,17 @@ const (
 	speed      = 125
 )
 
+type textureState struct {
+    snake *sdl.Texture
+    apple *sdl.Texture
+}
+
 type gameState struct {
 	window   *sdl.Window
 	renderer *sdl.Renderer
 	snake    *snake
 	apple    *apple
+    textures textureState
 }
 
 func render(state gameState) {
@@ -73,13 +79,14 @@ func main() {
 		window:   window,
 		renderer: renderer,
 	}
+    
+    state.textures.snake = loadTextureFromBMP("sprites/snake.bmp", state.renderer)
+    state.textures.apple = loadTextureFromBMP("sprites/apple.bmp", state.renderer)
 
 	s := createSnake(state)
 	state.snake = &s
-	state.snake.texture = loadTextureFromBMP("sprites/snake.bmp", state.renderer)
 	a := createApple(state)
 	state.apple = &a
-	state.apple.texture = loadTextureFromBMP("sprites/apple.bmp", state.renderer)
 
 	go render(state)
 

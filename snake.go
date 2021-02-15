@@ -25,6 +25,7 @@ func createSnake(state gameState) (s snake) {
 	s.nextDirection = "right"
 	s.growing = false
 	s.score = 0
+    s.texture = state.textures.snake
 
 	return s
 }
