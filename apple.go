@@ -30,8 +30,6 @@ func randomPlace(snakePositions [][4]int) (x, y int) {
 func createApple(state gameState) (a apple) {
 	a.posX, a.posY = randomPlace(state.snake.positions)
 
-	a.texture = loadTextureFromBMP("sprites/apple.bmp", state.renderer)
-
 	return a
 }
 

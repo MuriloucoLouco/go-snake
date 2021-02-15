@@ -16,7 +16,6 @@ type snake struct {
 }
 
 func createSnake(state gameState) (s snake) {
-	s.texture = loadTextureFromBMP("sprites/snake.bmp", state.renderer)
 	s.positions = [][4]int{
 		{centerX - 3, centerY, 90, 0},
 		{centerX - 2, centerY, 90, 0},

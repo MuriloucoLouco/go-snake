@@ -76,8 +76,10 @@ func main() {
 
 	s := createSnake(state)
 	state.snake = &s
+	state.snake.texture = loadTextureFromBMP("sprites/snake.bmp", state.renderer)
 	a := createApple(state)
 	state.apple = &a
+	state.apple.texture = loadTextureFromBMP("sprites/apple.bmp", state.renderer)
 
 	go render(state)
 
