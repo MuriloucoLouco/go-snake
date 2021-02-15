@@ -71,8 +71,6 @@ func (s *snake) die(state gameState) {
 }
 
 func (s *snake) update(state gameState) {
-	s.eat(state)
-
 	if !s.growing {
 		s.positions = s.positions[1:]
 	} else {
@@ -150,6 +148,8 @@ func (s *snake) update(state gameState) {
 		s.positions[len(s.positions)-2][2] = cornerAngle
 		s.positions[len(s.positions)-2][3] = 1
 	}
+
+	s.eat(state)
 }
 
 func (s *snake) render(state gameState) {

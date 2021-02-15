@@ -27,13 +27,15 @@ func render(state gameState) {
 		state.snake.update(state)
 
 		padX, padY, _, screenWidth, screenHeight := getRightSize(state.window)
-		state.renderer.SetDrawColor(255, 255, 255, 255)
-		state.renderer.Clear()
 		state.renderer.SetDrawColor(0, 0, 0, 255)
+		state.renderer.Clear()
+		state.renderer.SetDrawColor(255, 255, 255, 255)
 		state.renderer.FillRect(&sdl.Rect{X: int32(padX), Y: int32(padY), W: int32(screenWidth), H: int32(screenHeight)})
+		state.renderer.SetDrawColor(0, 0, 0, 255)
+		state.renderer.FillRect(&sdl.Rect{X: int32(padX) + 1, Y: int32(padY) + 1, W: int32(screenWidth) - 2, H: int32(screenHeight) - 2})
 
-		state.apple.render(state)
 		state.snake.render(state)
+		state.apple.render(state)
 
 		state.renderer.Present()
 
