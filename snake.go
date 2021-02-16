@@ -40,19 +40,19 @@ func (s *snake) move() {
 	keys := sdl.GetKeyboardState()
 
 	switch uint8(1) {
-	case keys[sdl.SCANCODE_RIGHT]:
+	case keys[sdl.SCANCODE_RIGHT], keys[sdl.SCANCODE_D]:
 		if s.direction != "left" {
 			newDirection = "right"
 		}
-	case keys[sdl.SCANCODE_LEFT]:
+	case keys[sdl.SCANCODE_LEFT], keys[sdl.SCANCODE_A]:
 		if s.direction != "right" {
 			newDirection = "left"
 		}
-	case keys[sdl.SCANCODE_UP]:
+	case keys[sdl.SCANCODE_UP], keys[sdl.SCANCODE_W]:
 		if s.direction != "down" {
 			newDirection = "up"
 		}
-	case keys[sdl.SCANCODE_DOWN]:
+	case keys[sdl.SCANCODE_DOWN], keys[sdl.SCANCODE_S]:
 		if s.direction != "up" {
 			newDirection = "down"
 		}
