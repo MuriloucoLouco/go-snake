@@ -3,5 +3,5 @@ gridHeight   = 20
 speed        = 125
 screenWidth  = 400
 screenHeight = 400
-snakeTexture = "sprites/snake.bmp"
-appleTexture = "sprites/apple.bmp"
+snakeTexture = "sprites/snakes/snake.bmp"
+appleTexture = "sprites/fruits/apple.bmp"
