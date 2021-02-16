@@ -16,6 +16,11 @@ type snake struct {
 }
 
 func createSnake(state gameState) (s snake) {
+	gridWidth := state.config.GridWidth
+	gridHeight := state.config.GridHeight
+	centerX := int(gridWidth / 2)
+	centerY := int(gridHeight / 2)
+
 	s.positions = [][4]int{
 		{centerX - 3, centerY, 90, 0},
 		{centerX - 2, centerY, 90, 0},
@@ -25,7 +30,7 @@ func createSnake(state gameState) (s snake) {
 	s.nextDirection = "right"
 	s.growing = false
 	s.score = 0
-    s.texture = state.textures.snake
+	s.texture = state.textures.snake
 
 	return s
 }
@@ -60,7 +65,11 @@ func (s *snake) eat(state gameState) {
 	snakeHead := s.positions[len(s.positions)-1]
 	if snakeHead[0] == state.apple.posX && snakeHead[1] == state.apple.posY {
 		s.growing = true
-		state.apple.posX, state.apple.posY = randomPlace(s.positions)
+		state.apple.posX, state.apple.posY = randomPlace(
+			state.snake.positions,
+			state.config.GridWidth,
+			state.config.GridHeight,
+		)
 		s.score++
 	}
 }
@@ -71,6 +80,9 @@ func (s *snake) die(state gameState) {
 }
 
 func (s *snake) update(state gameState) {
+	gridWidth := state.config.GridWidth
+	gridHeight := state.config.GridHeight
+
 	if !s.growing {
 		s.positions = s.positions[1:]
 	} else {
@@ -153,11 +165,12 @@ func (s *snake) update(state gameState) {
 }
 
 func (s *snake) render(state gameState) {
-	padX, padY, blockSize, _, _ := getRightSize(state.window)
+	padX, padY, blockSize, _, screenHeight := getRightSize(state)
 
 	for i, position := range s.positions {
 		var textureCoord int32
-		adjust := math.Round(blockSize / 50)
+		var adjust int32
+		adjust = int32(screenHeight / 500)
 
 		if position[3] == 0 {
 			textureCoord = 0
@@ -170,7 +183,7 @@ func (s *snake) render(state gameState) {
 		}
 
 		var adjustX, adjustY, stretchX, stretchY int32
-		if int32(adjust) > 0 && position[3] == 1 {
+		if screenHeight > 500 && position[3] == 1 {
 			switch position[2] {
 			case 0:
 				adjustY = -2

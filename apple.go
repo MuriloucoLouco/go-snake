@@ -12,14 +12,14 @@ type apple struct {
 	posX, posY int
 }
 
-func randomPlace(snakePositions [][4]int) (x, y int) {
+func randomPlace(snakePositions [][4]int, gridWidth, gridHeight int) (x, y int) {
 	rand.Seed(time.Now().UnixNano())
 	x = rand.Intn(gridWidth)
 	y = rand.Intn(gridHeight)
 
 	for _, position := range snakePositions {
 		if x == position[0] && y == position[1] {
-			x, y = randomPlace(snakePositions)
+			x, y = randomPlace(snakePositions, gridWidth, gridHeight)
 			break
 		}
 	}
@@ -28,14 +28,18 @@ func randomPlace(snakePositions [][4]int) (x, y int) {
 }
 
 func createApple(state gameState) (a apple) {
-	a.posX, a.posY = randomPlace(state.snake.positions)
-    a.texture = state.textures.apple
+	a.posX, a.posY = randomPlace(
+		state.snake.positions,
+		state.config.GridWidth,
+		state.config.GridHeight,
+	)
+	a.texture = state.textures.apple
 
 	return a
 }
 
 func (a *apple) render(state gameState) {
-	padX, padY, blockSize, _, _ := getRightSize(state.window)
+	padX, padY, blockSize, _, _ := getRightSize(state)
 
 	state.renderer.Copy(a.texture,
 		&sdl.Rect{X: 0, Y: 0, W: 8, H: 8},

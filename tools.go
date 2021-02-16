@@ -27,8 +27,10 @@ func loadTextureFromBMP(spriteName string, renderer *sdl.Renderer) (texture *sdl
 	return texture
 }
 
-func getRightSize(w *sdl.Window) (padX, padY, blockSize, screenX, screenY float64) {
-	screenWidth, screenHeight := w.GetSize()
+func getRightSize(state gameState) (padX, padY, blockSize, screenX, screenY float64) {
+	gridWidth := float64(state.config.GridWidth)
+	gridHeight := float64(state.config.GridHeight)
+	screenWidth, screenHeight := state.window.GetSize()
 	proportion := float64(gridWidth) / float64(gridHeight)
 	screenProportion := float64(screenWidth) / float64(screenHeight)
 
