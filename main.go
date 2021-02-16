@@ -36,7 +36,15 @@ type gameState struct {
 func main() {
 	//load configs
 	var state gameState
-	state.config = configFile{20, 20, 125, 400, 400, "sprites/snake.bmp", "sprites/apple.bmp"}
+	state.config = configFile{
+        20,
+        20,
+        125,
+        400,
+        400,
+        "sprites/snakes/snake.bmp",
+        "sprites/fruits/apple.bmp",
+    }
 	cfgBinary, err := ioutil.ReadFile("./config.toml")
 	if err != nil {
 		fmt.Println("file config.toml couldn't be loaded")
