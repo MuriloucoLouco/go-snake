@@ -31,7 +31,7 @@ func createMenu(state gameState) (m menu) {
 			},
 		},
 		{
-			"Grid Width: ",
+			fmt.Sprintf("Grid Width %d", state.config.GridWidth),
 			func(state *gameState) {
 				newValue := state.config.GridWidth
 				keys := sdl.GetKeyboardState()
@@ -43,12 +43,12 @@ func createMenu(state gameState) (m menu) {
 				}
 				if newValue >= 5 && newValue <= 80 {
 					state.config.GridWidth = newValue
-					state.menu.options[state.menu.selected].text = "Grid Width " + fmt.Sprintf("%d", state.config.GridWidth)
+					state.menu.options[state.menu.selected].text = fmt.Sprintf("Grid Width %d", state.config.GridWidth)
 				}
 			},
 		},
 		{
-			"Grid Height ",
+			fmt.Sprintf("Grid Height %d", state.config.GridHeight),
 			func(state *gameState) {
 				newValue := state.config.GridHeight
 				keys := sdl.GetKeyboardState()
@@ -60,7 +60,7 @@ func createMenu(state gameState) (m menu) {
 				}
 				if newValue >= 5 && newValue <= 80 {
 					state.config.GridHeight = newValue
-					state.menu.options[state.menu.selected].text = "Grid Height: " + fmt.Sprintf("%d", state.config.GridHeight)
+					state.menu.options[state.menu.selected].text = fmt.Sprintf("Grid Height %d", state.config.GridHeight)
 				}
 			},
 		},

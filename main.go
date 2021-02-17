@@ -41,7 +41,7 @@ type gameState struct {
 func main() {
 	//load configs
 	var state gameState
-	state.paused = false
+	state.paused = true
 	state.exited = false
 
 	state.config = configFile{
