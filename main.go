@@ -4,20 +4,23 @@ import (
 	"fmt"
 	"io/ioutil"
 	"time"
+    "path"
 
 	"github.com/BurntSushi/toml"
 	"github.com/veandco/go-sdl2/sdl"
 )
 
 type configFile struct {
-	GridWidth    int
-	GridHeight   int
-	Speed        int
-	ScreenWidth  int32
-	ScreenHeight int32
-	SnakeTexture string
-	AppleTexture string
-	FontTexture  string
+	GridWidth     int
+	GridHeight    int
+	Speed         int
+	ScreenWidth   int32
+	ScreenHeight  int32
+	SnakeTextures string
+	AppleTextures string
+    SnakeFile     string
+    AppleFile     string
+	FontTexture   string
 }
 
 type textureState struct {
@@ -27,15 +30,15 @@ type textureState struct {
 }
 
 type gameState struct {
-	window   *sdl.Window
-	renderer *sdl.Renderer
-	snake    *snake
-	apple    *apple
-	menu     *menu
-	textures textureState
-	config   configFile
-	paused   bool
-	exited   bool
+	window    *sdl.Window
+	renderer  *sdl.Renderer
+	snake     *snake
+	apple     *apple
+	menu      *menu
+	textures  textureState
+	config    configFile
+	paused    bool
+	exited    bool
 }
 
 func main() {
@@ -50,8 +53,10 @@ func main() {
 		125,
 		400,
 		400,
-		"sprites/snakes/snake.bmp",
-		"sprites/fruits/apple.bmp",
+		"sprites/snakes/",
+		"sprites/fruits/",
+        "snake.bmp",
+        "apple.bmp",
 		"sprites/font.bmp",
 	}
 	cfgBinary, err := ioutil.ReadFile("./config.toml")
@@ -90,9 +95,21 @@ func main() {
 	//define state
 	state.window = window
 	state.renderer = renderer
+    
+    snakeFiles, err := ioutil.ReadDir(state.config.SnakeTextures)
+    if err != nil || len(snakeFiles) == 0 {
+        panic(err)
+    }
+    state.config.SnakeFile = snakeFiles[0].Name()
+    
+    appleFiles, err := ioutil.ReadDir(state.config.AppleTextures)
+    if err != nil || len(appleFiles) == 0 {
+        panic(err)
+    }
+    state.config.AppleFile = appleFiles[0].Name()
 
-	state.textures.snake = loadTextureFromBMP(state.config.SnakeTexture, state.renderer)
-	state.textures.apple = loadTextureFromBMP(state.config.AppleTexture, state.renderer)
+	state.textures.snake = loadTextureFromBMP(path.Join(state.config.SnakeTextures, snakeFiles[0].Name()), state.renderer)
+	state.textures.apple = loadTextureFromBMP(path.Join(state.config.AppleTextures, appleFiles[0].Name()), state.renderer)
 	state.textures.font = loadTextureFromBMP(state.config.FontTexture, state.renderer)
 
 	s := createSnake(state)

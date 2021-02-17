@@ -8,7 +8,6 @@ import (
 )
 
 type apple struct {
-	texture    *sdl.Texture
 	posX, posY int
 }
 
@@ -33,7 +32,6 @@ func createApple(state gameState) (a apple) {
 		state.config.GridWidth,
 		state.config.GridHeight,
 	)
-	a.texture = state.textures.apple
 
 	return a
 }
@@ -41,7 +39,7 @@ func createApple(state gameState) (a apple) {
 func (a *apple) render(state gameState) {
 	padX, padY, blockSize, _, _ := getRightSize(state)
 
-	state.renderer.Copy(a.texture,
+	state.renderer.Copy(state.textures.apple,
 		&sdl.Rect{X: 0, Y: 0, W: 8, H: 8},
 		&sdl.Rect{
 			X: int32(float64(a.posX)*blockSize + padX),

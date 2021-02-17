@@ -7,7 +7,6 @@ import (
 )
 
 type snake struct {
-	texture       *sdl.Texture
 	positions     [][4]int
 	direction     string
 	nextDirection string
@@ -22,15 +21,14 @@ func createSnake(state gameState) (s snake) {
 	centerY := int(gridHeight / 2)
 
 	s.positions = [][4]int{
-		{centerX - 3, centerY, 90, 0},
 		{centerX - 2, centerY, 90, 0},
 		{centerX - 1, centerY, 90, 0},
+		{centerX - 0, centerY, 90, 0},
 	}
 	s.direction = "right"
 	s.nextDirection = "right"
 	s.growing = false
 	s.score = 0
-	s.texture = state.textures.snake
 
 	return s
 }
@@ -216,7 +214,7 @@ func (s *snake) render(state gameState) {
 			}
 		}
 
-		state.renderer.CopyEx(s.texture,
+		state.renderer.CopyEx(state.textures.snake,
 			&sdl.Rect{
 				X: textureCoord,
 				Y: 0,

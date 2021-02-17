@@ -1,8 +1,8 @@
-gridWidth    = 20
-gridHeight   = 20
-speed        = 125
-screenWidth  = 400
-screenHeight = 400
-snakeTexture = "sprites/snakes/snake.bmp"
-appleTexture = "sprites/fruits/apple.bmp"
-fontTexture  = "sprites/font.bmp"
+gridWidth     = 20
+gridHeight    = 20
+speed         = 125
+screenWidth   = 400
+screenHeight  = 400
+snakeTextures = "sprites/snakes/"
+appleTextures = "sprites/fruits/"
+fontTexture   = "sprites/font.bmp"
