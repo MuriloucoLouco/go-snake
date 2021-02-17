@@ -108,8 +108,14 @@ func main() {
     }
     state.config.AppleFile = appleFiles[0].Name()
 
-	state.textures.snake = loadTextureFromBMP(path.Join(state.config.SnakeTextures, snakeFiles[0].Name()), state.renderer)
-	state.textures.apple = loadTextureFromBMP(path.Join(state.config.AppleTextures, appleFiles[0].Name()), state.renderer)
+	state.textures.snake = loadTextureFromBMP(
+        path.Join(state.config.SnakeTextures, snakeFiles[0].Name()),
+        state.renderer,
+    )
+	state.textures.apple = loadTextureFromBMP(
+        path.Join(state.config.AppleTextures, appleFiles[0].Name()),
+        state.renderer,
+    )
 	state.textures.font = loadTextureFromBMP(state.config.FontTexture, state.renderer)
 
 	s := createSnake(state)
@@ -146,9 +152,19 @@ func render(state *gameState) {
 		state.renderer.SetDrawColor(0, 0, 0, 255)
 		state.renderer.Clear()
 		state.renderer.SetDrawColor(255, 255, 255, 255)
-		state.renderer.FillRect(&sdl.Rect{X: int32(padX), Y: int32(padY), W: int32(screenWidth), H: int32(screenHeight)})
+		state.renderer.FillRect(&sdl.Rect{
+            X: int32(padX),
+            Y: int32(padY),
+            W: int32(screenWidth),
+            H: int32(screenHeight),
+        })
 		state.renderer.SetDrawColor(0, 0, 0, 255)
-		state.renderer.FillRect(&sdl.Rect{X: int32(padX) + 1, Y: int32(padY) + 1, W: int32(screenWidth) - 2, H: int32(screenHeight) - 2})
+		state.renderer.FillRect(&sdl.Rect{
+            X: int32(padX) + 1,
+            Y: int32(padY) + 1,
+            W: int32(screenWidth) - 2,
+            H: int32(screenHeight) - 2,
+        })
 
 		if !state.paused {
 			state.snake.update(*state)

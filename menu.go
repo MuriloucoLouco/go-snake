@@ -20,146 +20,162 @@ type option struct {
 	method fn
 }
 
+func unpause(state *gameState) {
+    keys := sdl.GetKeyboardState()
+    if keys[sdl.SCANCODE_RETURN] == 1 {
+        state.paused = false
+    }
+}
+
+func changeGridWidth(state *gameState) {
+    newValue := state.config.GridWidth
+    keys := sdl.GetKeyboardState()
+
+    if keys[sdl.SCANCODE_LEFT] == 1 {
+        newValue--
+    } else if keys[sdl.SCANCODE_RIGHT] == 1 {
+        newValue++
+    }
+    if newValue >= 5 && newValue <= 80 {
+        state.config.GridWidth = newValue
+        state.menu.options[state.menu.selected].text = fmt.Sprintf("Grid Width %d", state.config.GridWidth)
+    }
+}
+
+func changeGridHeight(state *gameState) {
+    newValue := state.config.GridHeight
+    keys := sdl.GetKeyboardState()
+
+    if keys[sdl.SCANCODE_LEFT] == 1 {
+        newValue--
+    } else if keys[sdl.SCANCODE_RIGHT] == 1 {
+        newValue++
+    }
+    if newValue >= 5 && newValue <= 80 {
+        state.config.GridHeight = newValue
+        state.menu.options[state.menu.selected].text = fmt.Sprintf("Grid Height %d", state.config.GridHeight)
+    }
+}
+
+func changeSkin(state *gameState) {
+    keys := sdl.GetKeyboardState()
+    if !(keys[sdl.SCANCODE_LEFT] == 1 || keys[sdl.SCANCODE_RIGHT] == 1) {
+        return
+    }
+    files, err := ioutil.ReadDir(state.config.SnakeTextures)
+    if err != nil {
+        fmt.Println("couldn't load "+ state.config.SnakeTextures +" folder")
+        return
+    }
+    if len(files) == 0 {
+        fmt.Println("folder "+ state.config.SnakeTextures +" has no files")
+        return
+    }
+    
+    var index int
+    
+    for i, file := range files {
+        if file.Name() == state.config.SnakeFile {
+            index = i
+        }
+    }
+    
+    if keys[sdl.SCANCODE_RIGHT] == 1 {
+        if index < len(files)-1 {
+            index++
+        } else {
+            index = 0
+        }
+    } else if keys[sdl.SCANCODE_LEFT] == 1 {
+        if index > 0 {
+            index--
+        } else {
+            index = len(files)-1
+        }
+    }
+    state.config.SnakeFile = files[index].Name()
+    state.textures.snake = loadTextureFromBMP(
+        path.Join(state.config.SnakeTextures, files[index].Name()),
+        state.renderer,
+    )
+}
+
+func changeFruit(state *gameState) {
+    keys := sdl.GetKeyboardState()
+    if !(keys[sdl.SCANCODE_LEFT] == 1 || keys[sdl.SCANCODE_RIGHT] == 1) {
+        return
+    }
+    files, err := ioutil.ReadDir(state.config.AppleTextures)
+    if err != nil {
+        fmt.Println("couldn't load "+ state.config.AppleTextures +" folder")
+        return
+    }
+    if len(files) == 0 {
+        fmt.Println("folder "+ state.config.AppleTextures +" has no files")
+        return
+    }
+    
+    var index int
+    
+    for i, file := range files {
+        if file.Name() == state.config.AppleFile {
+            index = i
+        }
+    }
+    
+    if keys[sdl.SCANCODE_RIGHT] == 1 {
+        if index < len(files)-1 {
+            index++
+        } else {
+            index = 0
+        }
+    } else if keys[sdl.SCANCODE_LEFT] == 1 {
+        if index > 0 {
+            index--
+        } else {
+            index = len(files)-1
+        }
+    }
+    state.config.AppleFile = files[index].Name()
+    state.textures.apple = loadTextureFromBMP(
+        path.Join(state.config.AppleTextures, files[index].Name()),
+        state.renderer,
+    )
+}
+
+func exitGame(state *gameState) {
+    keys := sdl.GetKeyboardState()
+    if keys[sdl.SCANCODE_RETURN] == 1 {
+        state.exited = true
+    }
+}
+
 func createMenu(state gameState) (m menu) {
 
 	m.options = []option{
 		{
 			"Continue",
-			func(state *gameState) {
-				keys := sdl.GetKeyboardState()
-				if keys[sdl.SCANCODE_RETURN] == 1 {
-					state.paused = false
-				}
-			},
-		},
+			unpause,
+        },
 		{
 			fmt.Sprintf("Grid Width %d", state.config.GridWidth),
-			func(state *gameState) {
-				newValue := state.config.GridWidth
-				keys := sdl.GetKeyboardState()
-
-				if keys[sdl.SCANCODE_LEFT] == 1 {
-					newValue--
-				} else if keys[sdl.SCANCODE_RIGHT] == 1 {
-					newValue++
-				}
-				if newValue >= 5 && newValue <= 80 {
-					state.config.GridWidth = newValue
-					state.menu.options[state.menu.selected].text = fmt.Sprintf("Grid Width %d", state.config.GridWidth)
-				}
-			},
+			changeGridWidth,
 		},
 		{
 			fmt.Sprintf("Grid Height %d", state.config.GridHeight),
-			func(state *gameState) {
-				newValue := state.config.GridHeight
-				keys := sdl.GetKeyboardState()
-
-				if keys[sdl.SCANCODE_LEFT] == 1 {
-					newValue--
-				} else if keys[sdl.SCANCODE_RIGHT] == 1 {
-					newValue++
-				}
-				if newValue >= 5 && newValue <= 80 {
-					state.config.GridHeight = newValue
-					state.menu.options[state.menu.selected].text = fmt.Sprintf("Grid Height %d", state.config.GridHeight)
-				}
-			},
+			changeGridHeight,
 		},
         {
             "Change skin",
-            func(state *gameState) {
-                keys := sdl.GetKeyboardState()
-                if !(keys[sdl.SCANCODE_LEFT] == 1 || keys[sdl.SCANCODE_RIGHT] == 1) {
-                    return
-                }
-                files, err := ioutil.ReadDir(state.config.SnakeTextures)
-                if err != nil {
-                    fmt.Println("couldn't load "+ state.config.SnakeTextures +" folder")
-                    return
-                }
-                if len(files) == 0 {
-                    fmt.Println("folder "+ state.config.SnakeTextures +" has no files")
-                    return
-                }
-                
-                var index int
-                
-                for i, file := range files {
-                    if file.Name() == state.config.SnakeFile {
-                        index = i
-                    }
-                }
-                
-                if keys[sdl.SCANCODE_RIGHT] == 1 {
-                    if index < len(files)-1 {
-                        index++
-                    } else {
-                        index = 0
-                    }
-                } else if keys[sdl.SCANCODE_LEFT] == 1 {
-                    if index > 0 {
-                        index--
-                    } else {
-                        index = len(files)-1
-                    }
-                }
-                state.config.SnakeFile = files[index].Name()
-                state.textures.snake = loadTextureFromBMP(path.Join(state.config.SnakeTextures, files[index].Name()), state.renderer)
-                
-            },
+            changeSkin,
         },
         {
             "Change fruit",
-            func(state *gameState) {
-                keys := sdl.GetKeyboardState()
-                if !(keys[sdl.SCANCODE_LEFT] == 1 || keys[sdl.SCANCODE_RIGHT] == 1) {
-                    return
-                }
-                files, err := ioutil.ReadDir(state.config.AppleTextures)
-                if err != nil {
-                    fmt.Println("couldn't load "+ state.config.AppleTextures +" folder")
-                    return
-                }
-                if len(files) == 0 {
-                    fmt.Println("folder "+ state.config.AppleTextures +" has no files")
-                    return
-                }
-                
-                var index int
-                
-                for i, file := range files {
-                    if file.Name() == state.config.AppleFile {
-                        index = i
-                    }
-                }
-                
-                if keys[sdl.SCANCODE_RIGHT] == 1 {
-                    if index < len(files)-1 {
-                        index++
-                    } else {
-                        index = 0
-                    }
-                } else if keys[sdl.SCANCODE_LEFT] == 1 {
-                    if index > 0 {
-                        index--
-                    } else {
-                        index = len(files)-1
-                    }
-                }
-                state.config.AppleFile = files[index].Name()
-                state.textures.apple = loadTextureFromBMP(path.Join(state.config.AppleTextures, files[index].Name()), state.renderer)
-                
-            },
+            changeFruit,
         },
         {
 			"Exit Game",
-			func(state *gameState) {
-				keys := sdl.GetKeyboardState()
-				if keys[sdl.SCANCODE_RETURN] == 1 {
-					state.exited = true
-				}
-			},
+			exitGame,
 		},
 	}
 	m.selected = 0

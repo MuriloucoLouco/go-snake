@@ -104,7 +104,8 @@ func (s *snake) update(state gameState) {
 		newPosition = [4]int{lastPosition[0], lastPosition[1] + 1, 180, 0}
 	}
 
-	if newPosition[0] < 0 || newPosition[0] >= gridWidth || newPosition[1] < 0 || newPosition[1] >= gridHeight {
+	if newPosition[0] < 0 || newPosition[0] >= gridWidth ||
+     newPosition[1] < 0 || newPosition[1] >= gridHeight {
 		s.die(state)
 		return
 	}
