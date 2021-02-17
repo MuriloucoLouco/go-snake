@@ -35,7 +35,7 @@ func createSnake(state gameState) (s snake) {
 	return s
 }
 
-func (s *snake) move() {
+func (s *snake) control() {
 	newDirection := s.nextDirection
 	keys := sdl.GetKeyboardState()
 

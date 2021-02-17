@@ -29,22 +29,28 @@ type gameState struct {
 	renderer *sdl.Renderer
 	snake    *snake
 	apple    *apple
+	menu     *menu
 	textures textureState
 	config   configFile
+	paused   bool
+	exited   bool
 }
 
 func main() {
 	//load configs
 	var state gameState
+	state.paused = false
+	state.exited = false
+
 	state.config = configFile{
-        20,
-        20,
-        125,
-        400,
-        400,
-        "sprites/snakes/snake.bmp",
-        "sprites/fruits/apple.bmp",
-    }
+		20,
+		20,
+		125,
+		400,
+		400,
+		"sprites/snakes/snake.bmp",
+		"sprites/fruits/apple.bmp",
+	}
 	cfgBinary, err := ioutil.ReadFile("./config.toml")
 	if err != nil {
 		fmt.Println("file config.toml couldn't be loaded")
@@ -89,27 +95,33 @@ func main() {
 	state.snake = &s
 	a := createApple(state)
 	state.apple = &a
+	m := createMenu(state)
+	state.menu = &m
 
 	//main loop
-	go render(state)
+	go render(&state)
 
 	for {
 		sdl.WaitEvent()
 		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
 			switch event.(type) {
 			case *sdl.QuitEvent:
-				return
+				state.exited = true
 			}
 		}
-		state.snake.move()
+		if state.exited {
+			return
+		}
+		state.menu.control(&state)
+		if !state.paused {
+			state.snake.control()
+		}
 	}
 }
 
-func render(state gameState) {
+func render(state *gameState) {
 	for {
-		state.snake.update(state)
-
-		padX, padY, _, screenWidth, screenHeight := getRightSize(state)
+		padX, padY, _, screenWidth, screenHeight := getRightSize(*state)
 		state.renderer.SetDrawColor(0, 0, 0, 255)
 		state.renderer.Clear()
 		state.renderer.SetDrawColor(255, 255, 255, 255)
@@ -117,8 +129,12 @@ func render(state gameState) {
 		state.renderer.SetDrawColor(0, 0, 0, 255)
 		state.renderer.FillRect(&sdl.Rect{X: int32(padX) + 1, Y: int32(padY) + 1, W: int32(screenWidth) - 2, H: int32(screenHeight) - 2})
 
-		state.snake.render(state)
-		state.apple.render(state)
+		if !state.paused {
+			state.snake.update(*state)
+		}
+
+		state.snake.render(*state)
+		state.apple.render(*state)
 
 		state.renderer.Present()
 
