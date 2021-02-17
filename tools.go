@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/veandco/go-sdl2/sdl"
 )
@@ -47,4 +48,23 @@ func getRightSize(state gameState) (padX, padY, blockSize, screenX, screenY floa
 	}
 
 	return padX, padY, blockSize, screenX, screenY
+}
+
+func writeText(text string, x, y, size int32, state gameState) {
+	for i, letter := range strings.ToLower(text) {
+		offsetX := int32(0)
+		offsetY := int32(0)
+		fontSize := int32(8)
+		if int(letter) >= 97 && int(letter) <= 122 {
+			offsetX = fontSize * (int32(letter) - 96)
+		}
+		if int(letter) >= 48 && int(letter) <= 57 {
+			offsetX = fontSize * (int32(letter) - 48)
+			offsetY = fontSize
+		}
+		state.renderer.Copy(state.textures.font,
+			&sdl.Rect{X: offsetX, Y: offsetY, W: 8, H: 8},
+			&sdl.Rect{X: x + size*int32(i), Y: y, W: size, H: size},
+		)
+	}
 }

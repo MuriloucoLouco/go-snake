@@ -5,3 +5,4 @@ screenWidth  = 400
 screenHeight = 400
 snakeTexture = "sprites/snakes/snake.bmp"
 appleTexture = "sprites/fruits/apple.bmp"
+fontTexture  = "sprites/font.bmp"

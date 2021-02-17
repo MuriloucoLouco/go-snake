@@ -17,11 +17,13 @@ type configFile struct {
 	ScreenHeight int32
 	SnakeTexture string
 	AppleTexture string
+	FontTexture  string
 }
 
 type textureState struct {
 	snake *sdl.Texture
 	apple *sdl.Texture
+	font  *sdl.Texture
 }
 
 type gameState struct {
@@ -50,6 +52,7 @@ func main() {
 		400,
 		"sprites/snakes/snake.bmp",
 		"sprites/fruits/apple.bmp",
+		"sprites/font.bmp",
 	}
 	cfgBinary, err := ioutil.ReadFile("./config.toml")
 	if err != nil {
@@ -90,6 +93,7 @@ func main() {
 
 	state.textures.snake = loadTextureFromBMP(state.config.SnakeTexture, state.renderer)
 	state.textures.apple = loadTextureFromBMP(state.config.AppleTexture, state.renderer)
+	state.textures.font = loadTextureFromBMP(state.config.FontTexture, state.renderer)
 
 	s := createSnake(state)
 	state.snake = &s
@@ -132,9 +136,11 @@ func render(state *gameState) {
 		if !state.paused {
 			state.snake.update(*state)
 		}
-
 		state.snake.render(*state)
 		state.apple.render(*state)
+		if state.paused {
+			state.menu.render(*state)
+		}
 
 		state.renderer.Present()
 

@@ -31,15 +31,6 @@ func createMenu(state gameState) (m menu) {
 			},
 		},
 		{
-			"Exit Game",
-			func(state *gameState) {
-				keys := sdl.GetKeyboardState()
-				if keys[sdl.SCANCODE_RETURN] == 1 {
-					state.exited = true
-				}
-			},
-		},
-		{
 			"Grid Width: ",
 			func(state *gameState) {
 				newValue := state.config.GridWidth
@@ -52,12 +43,12 @@ func createMenu(state gameState) (m menu) {
 				}
 				if newValue >= 5 && newValue <= 80 {
 					state.config.GridWidth = newValue
-					state.menu.options[state.menu.selected].text = "Grid Width: " + fmt.Sprintf("%d", state.config.GridWidth)
+					state.menu.options[state.menu.selected].text = "Grid Width " + fmt.Sprintf("%d", state.config.GridWidth)
 				}
 			},
 		},
 		{
-			"Grid Height: ",
+			"Grid Height ",
 			func(state *gameState) {
 				newValue := state.config.GridHeight
 				keys := sdl.GetKeyboardState()
@@ -70,6 +61,15 @@ func createMenu(state gameState) (m menu) {
 				if newValue >= 5 && newValue <= 80 {
 					state.config.GridHeight = newValue
 					state.menu.options[state.menu.selected].text = "Grid Height: " + fmt.Sprintf("%d", state.config.GridHeight)
+				}
+			},
+		},
+		{
+			"Exit Game",
+			func(state *gameState) {
+				keys := sdl.GetKeyboardState()
+				if keys[sdl.SCANCODE_RETURN] == 1 {
+					state.exited = true
 				}
 			},
 		},
@@ -100,4 +100,25 @@ func (m *menu) control(state *gameState) {
 	}
 
 	m.options[m.selected].method(state)
+}
+
+func (m *menu) render(state gameState) {
+	padX, padY, blockSize, _, _ := getRightSize(state)
+
+	state.renderer.SetDrawColor(255, 255, 255, 255)
+	state.renderer.DrawRect(&sdl.Rect{
+		X: int32(padX) - 2,
+		Y: int32(padY + blockSize*float64(m.selected)*1.5),
+		W: int32(blockSize)*int32(len(m.options[m.selected].text)) + 4,
+		H: int32(blockSize) + 4,
+	})
+
+	for i, option := range m.options {
+		writeText(option.text,
+			int32(padX+2),
+			int32(2+padY+blockSize*float64(i)*1.5),
+			int32(blockSize),
+			state,
+		)
+	}
 }
