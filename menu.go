@@ -143,6 +143,21 @@ func changeFruit(state *gameState) {
     )
 }
 
+func changeAppleNumber(state *gameState) {
+    newValue := state.config.AppleNumber
+    keys := sdl.GetKeyboardState()
+
+    if keys[sdl.SCANCODE_LEFT] == 1 {
+        newValue--
+    } else if keys[sdl.SCANCODE_RIGHT] == 1 {
+        newValue++
+    }
+    if newValue >= 1 && newValue <= state.config.GridWidth * state.config.GridHeight {
+        state.config.AppleNumber = newValue
+        state.menu.options[state.menu.selected].text = fmt.Sprintf("Fruit number %d", state.config.AppleNumber)
+    }
+}
+
 func exitGame(state *gameState) {
     keys := sdl.GetKeyboardState()
     if keys[sdl.SCANCODE_RETURN] == 1 {
@@ -172,6 +187,10 @@ func createMenu(state gameState) (m menu) {
         {
             "Change fruit",
             changeFruit,
+        },
+        {
+            fmt.Sprintf("Fruit number %d", state.config.AppleNumber),
+            changeAppleNumber,
         },
         {
 			"Exit Game",

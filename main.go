@@ -21,6 +21,7 @@ type configFile struct {
     SnakeFile     string
     AppleFile     string
 	FontTexture   string
+    AppleNumber   int
 }
 
 type textureState struct {
@@ -33,7 +34,7 @@ type gameState struct {
 	window    *sdl.Window
 	renderer  *sdl.Renderer
 	snake     *snake
-	apple     *apple
+	apples    []*apple
 	menu      *menu
 	textures  textureState
 	config    configFile
@@ -58,6 +59,7 @@ func main() {
         "snake.bmp",
         "apple.bmp",
 		"sprites/font.bmp",
+        1,
 	}
 	cfgBinary, err := ioutil.ReadFile("./config.toml")
 	if err != nil {
@@ -120,8 +122,10 @@ func main() {
 
 	s := createSnake(state)
 	state.snake = &s
-	a := createApple(state)
-	state.apple = &a
+    for i := 0; i < state.config.AppleNumber; i++ {
+    	a := createApple(state)
+        state.apples = append(state.apples, &a)
+    }
 	m := createMenu(state)
 	state.menu = &m
 
@@ -167,10 +171,12 @@ func render(state *gameState) {
         })
 
 		if !state.paused {
-			state.snake.update(*state)
+			state.snake.update(state)
 		}
 		state.snake.render(*state)
-		state.apple.render(*state)
+		for _, apple := range state.apples {
+            apple.render(*state)
+        }
 		if state.paused {
 			state.menu.render(*state)
 		}

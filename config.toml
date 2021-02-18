@@ -6,3 +6,4 @@ screenHeight  = 400
 snakeTextures = "sprites/snakes/"
 appleTextures = "sprites/fruits/"
 fontTexture   = "sprites/font.bmp"
+appleNumber   = 1

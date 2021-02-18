@@ -11,27 +11,30 @@ type apple struct {
 	posX, posY int
 }
 
-func randomPlace(snakePositions [][4]int, gridWidth, gridHeight int) (x, y int) {
+func randomPlace(state gameState) (x, y int) {
 	rand.Seed(time.Now().UnixNano())
-	x = rand.Intn(gridWidth)
-	y = rand.Intn(gridHeight)
+	x = rand.Intn(state.config.GridWidth)
+	y = rand.Intn(state.config.GridHeight)
 
-	for _, position := range snakePositions {
+	for _, position := range state.snake.positions {
 		if x == position[0] && y == position[1] {
-			x, y = randomPlace(snakePositions, gridWidth, gridHeight)
+			x, y = randomPlace(state)
 			break
 		}
 	}
+    
+    for _, apple := range state.apples {
+        if x == apple.posX && y == apple.posY {
+			x, y = randomPlace(state)
+			break
+		}
+    }
 
 	return x, y
 }
 
 func createApple(state gameState) (a apple) {
-	a.posX, a.posY = randomPlace(
-		state.snake.positions,
-		state.config.GridWidth,
-		state.config.GridHeight,
-	)
+	a.posX, a.posY = randomPlace(state)
 
 	return a
 }
