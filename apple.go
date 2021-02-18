@@ -14,9 +14,17 @@ type apple struct {
 func canPlaceApple(state gameState) bool {
 	width := state.config.GridWidth
 	height := state.config.GridHeight
-	positions := make([][]bool, height)
+	for _, apple := range state.apples {
+		if apple.posX > width {
+			width = apple.posX
+		}
+		if apple.posY > height {
+			height = apple.posY
+		}
+	}
+	positions := make([][]bool, height+1)
 	for i := range positions {
-		positions[i] = make([]bool, width)
+		positions[i] = make([]bool, width+1)
 	}
 
 	for _, apple := range state.apples {
@@ -33,6 +41,7 @@ func canPlaceApple(state gameState) bool {
 			}
 		}
 	}
+
 	if numberOfBlanks >= 2 {
 		return true
 	}
