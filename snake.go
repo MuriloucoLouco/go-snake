@@ -61,29 +61,29 @@ func (s *snake) control() {
 
 func (s *snake) eat(state gameState) {
 	snakeHead := s.positions[len(s.positions)-1]
-    for _, apple := range state.apples {
-    	if snakeHead[0] == apple.posX && snakeHead[1] == apple.posY {
-            if len(state.snake.positions) + len(state.apples) >= state.config.GridWidth * state.config.GridHeight {
-                break
-            }
-            s.growing = true
-            apple.posX, apple.posY = randomPlace(state)
-            s.score++
-        }
-    }
+	for _, apple := range state.apples {
+		if snakeHead[0] == apple.posX && snakeHead[1] == apple.posY {
+			if !canPlaceApple(state) {
+				return
+			}
+			s.growing = true
+			apple.posX, apple.posY = randomPlace(state)
+			s.score++
+		}
+	}
 }
 
 func (s *snake) die(state *gameState) {
-    ns := createSnake(*state)
+	ns := createSnake(*state)
 	state.snake = &ns
-    state.apples = []*apple{}
-    for i := 0; i < state.config.AppleNumber; i++ {
-        if len(state.snake.positions) + len(state.apples) >= state.config.GridWidth * state.config.GridHeight {
-            return
-        }
-    	a := createApple(*state)
-        state.apples = append(state.apples, &a)
-    }
+	state.apples = []*apple{}
+	for i := 0; i < state.config.AppleNumber; i++ {
+		if !canPlaceApple(*state) {
+			return
+		}
+		a := createApple(*state)
+		state.apples = append(state.apples, &a)
+	}
 }
 
 func (s *snake) update(state *gameState) {
@@ -114,7 +114,7 @@ func (s *snake) update(state *gameState) {
 	}
 
 	if newPosition[0] < 0 || newPosition[0] >= gridWidth ||
-     newPosition[1] < 0 || newPosition[1] >= gridHeight {
+		newPosition[1] < 0 || newPosition[1] >= gridHeight {
 		s.die(state)
 		return
 	}
