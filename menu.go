@@ -155,6 +155,15 @@ func changeAppleNumber(state *gameState) {
     if newValue >= 1 && newValue <= state.config.GridWidth * state.config.GridHeight {
         state.config.AppleNumber = newValue
         state.menu.options[state.menu.selected].text = fmt.Sprintf("Fruit number %d", state.config.AppleNumber)
+        if newValue > len(state.apples)-1 {
+            if len(state.snake.positions) + len(state.apples) >= state.config.GridWidth * state.config.GridHeight {
+                return
+            }
+            a := createApple(*state)
+            state.apples = append(state.apples, &a)
+        } else {
+            state.apples = state.apples[1:]
+        }
     }
 }
 
