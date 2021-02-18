@@ -211,8 +211,22 @@ func (m *menu) control(state *gameState) {
 }
 
 func (m *menu) render(state gameState) {
-	padX, padY, blockSize, _, _ := getRightSize(state)
-
+	padX, padY, blockSize, screenWidth, screenHeight := getRightSize(state)
+    var blockX, blockY float64
+    blockY = float64(len(m.options)) * 1.5
+    for _, option := range m.options {
+        if float64(len(option.text)) > blockX {
+            blockX = float64(len(option.text))
+        }
+    }
+    
+    blockSize = screenHeight / blockY
+    
+    
+    if blockSize * blockX > screenWidth {
+        blockSize = screenWidth / blockX
+    }
+    
 	state.renderer.SetDrawColor(255, 255, 255, 255)
 	state.renderer.DrawRect(&sdl.Rect{
 		X: int32(padX) - 2,
